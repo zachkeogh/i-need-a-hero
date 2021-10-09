@@ -1,0 +1,47 @@
+{
+  "name": "i-need-a-hero",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "nodemon babel-node dist/server/server.js PORT=3000",
+    "build-server": "BUILD_TYPE=server webpack --config config.js",
+    "build": "webpack --config config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zachkeogh/i-need-a-hero.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zachkeogh/i-need-a-hero/issues"
+  },
+  "homepage": "https://github.com/zachkeogh/i-need-a-hero#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "styled-components": "^5.3.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.15.5",
+    "@babel/preset-env": "^7.15.6",
+    "@babel/preset-react": "^7.14.5",
+    "@svgr/webpack": "^5.5.0",
+    "@types/node": "^16.10.3",
+    "@types/react": "^17.0.26",
+    "@types/react-dom": "^17.0.9",
+    "awesome-typescript-loader": "^5.2.1",
+    "babel-loader": "^8.2.2",
+    "babel-plugin-styled-components": "^1.13.2",
+    "nodemon": "^2.0.13",
+    "prisma": "^3.2.0",
+    "ts-loader": "^9.2.6",
+    "ts-node": "^10.2.1",
+    "typescript": "^3.9.10",
+    "webpack": "^5.53.0",
+    "webpack-cli": "^4.8.0"
+  }
+}
