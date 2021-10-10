@@ -1,7 +1,7 @@
 import express from 'express';
 import React from "react";
-import ReactDOMServer from "react-dom/server";
-import App from '../../app/components/app.js'
+import ReactDOMServer from 'react-dom/server';
+import App from '../../components/app.js'
 
 const router = express.Router();
 router.use(express.static('dist/app'))

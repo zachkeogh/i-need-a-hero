@@ -1,11 +1,11 @@
-const path = require('path')
+// const path = require('path')
 const server = process.env.BUILD_TYPE === 'server'
 
-module.exports = {
-  entry : path.resolve(__dirname + '/src/server/server.js'),
+export default {
+  entry : './src/app/index.tsx',
   output: {
-    path : path.resolve(__dirname + '/dist/server'),
-    filename : 'server.js',
+    path : './dist/app',
+    filename : 'main.js',
     libraryTarget: "commonjs",
     module: false,
   },
@@ -30,7 +30,7 @@ module.exports = {
       },
       {
         test: /\.m?js$/,
-        exclude: [/(node_modules|bower_components)/],
+        exclude: [ /(node_modules|bower_components)/,'./src/server/'],
         use: {
           loader: 'babel-loader',
           options: {
@@ -41,5 +41,5 @@ module.exports = {
     ]
   },
   watch: true,
-  target: 'node',
+  target: ['web', 'es5'],
 }
