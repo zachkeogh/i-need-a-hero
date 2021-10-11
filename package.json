@@ -3,10 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "nodemon babel-node dist/server/server PORT=3000",
+    "server": "nodemon babel-node dist/server/server.js PORT=3000",
     "build-server": "BUILD_TYPE=server webpack --config config.js",
     "build": "BUILD_TYPE=app webpack --config config-app.js"
   },
