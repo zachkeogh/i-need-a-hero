@@ -5,7 +5,7 @@ const StyledHero = styled.div`
   border: 1px solid #fff;
   max-width: 18%;
   min-width: 18%;
-  ${(props) => props.type === 'empty' ? 'background-color: #12121240; justify-content: center; align-items: center; display: flex; flex-direction: column' : 
+  ${(props) => props.type === 'empty' ? 'background-color: #12121240; justify-content: center; align-items: center; display: flex; flex-direction: column; min-height: 400px;' : 
   'background-color: #121212; box-shadow: -6px 6px 0px #b14040;' };
   border-radius: 3px;
 `
@@ -29,6 +29,8 @@ const HeroName = styled.p`
 const HeroDescription = styled.p`
   font-family: 'Rubik', sans-serif;
   font-weight: 300;
+  font-size: 0.85em;
+  line-height: 1.4;
 `
 
 const HeroButtonHolder = styled.div`
