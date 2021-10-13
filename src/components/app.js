@@ -4,6 +4,7 @@ import response from '../../heroes-response'
 import Hero from './hero'
 import AudioButton from './audioButton'
 import testSearchResults from '../../sample-search'
+import useRequest from '../hooks/useRequest'
 
 const App = styled.div`
   min-height: 100vh;
@@ -124,9 +125,12 @@ const Team = ({ team, removeHero }) => {
 }
 
 const HeroSearch = () => {
+  // const [searchResults, updateSearchResults] = useState(null);
   const [searchString,setSearchString] = useState('')
+  const [searchState, searchForHeroes] = useRequest('/heroes/search/')
+
   const handleSubmit = (e) => {
-    console.log('do a search')
+    searchString && searchString != searchForHeroes(searchString)
     e.preventDefault()
     e.stopPropagation()
   }
@@ -143,9 +147,16 @@ const HeroSearch = () => {
         <StyledSubmit type='submit' />
       </StyledForm>
     </StyledFormHolder>
-    <SearchResults />
+    { 
+      !searchState ? null :
+      searchState === 'loading' ? <p>loading....</p> : 
+      <SearchResults searchResults={searchState} /> 
+      }
+    <Attribution />
   </>
 }
+
+const Attribution = () => <a href='http://marvel.com' >Data provided by Marvel. © 2021 MARVEL</a>
 
 const filteredSearchResults = testSearchResults.data.results;
 
@@ -176,12 +187,12 @@ const StyledResultsImg = styled.div`
   }
 `
 
-const SearchResults = () => {
-
-  return <StyledSearchResults>
+const SearchResults = ({ searchResults }) => {
+  return !searchResults ? null : 
+  <StyledSearchResults>
     <p>results</p>
     <div>{
-      filteredSearchResults.map(c => <ResultsHero key={c.id} heroData={c} />)
+      searchResults.map(c => <ResultsHero key={c.id} heroData={c} />)
     }</div>
     </StyledSearchResults>
 }
