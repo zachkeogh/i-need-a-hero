@@ -1,5 +1,6 @@
+require('dotenv').config()
 import express from 'express';
-const port = process.env.PORT ??= 3000;
+const port = process.env.PORT;
 import router from './routers/app.js';
 import heroRouter from './routers/heroes.js'
 

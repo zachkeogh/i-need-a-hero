@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "M_PUBLIC=a2acc5a5f7d4ca86c48f6eb688f0157c M_PRIVATE=41d6f02a47f71c20b467ea18c1d37fe7d616fb1b nodemon babel-node dist/server/server.js PORT=3000",
+    "server": "nodemon babel-node dist/server/server.js",
     "build-server": "BUILD_TYPE=server webpack --config config.js",
     "build": "BUILD_TYPE=app webpack --config config-app.js"
   },
@@ -21,6 +21,7 @@
   "homepage": "https://github.com/zachkeogh/i-need-a-hero#readme",
   "dependencies": {
     "axios": "^0.22.0",
+    "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -38,7 +39,6 @@
     "babel-loader": "^8.2.2",
     "babel-plugin-styled-components": "^1.13.2",
     "nodemon": "^2.0.13",
-    "prisma": "^3.2.0",
     "ts-loader": "^9.2.6",
     "ts-node": "^10.2.1",
     "typescript": "^3.9.10",
