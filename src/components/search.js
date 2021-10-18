@@ -45,6 +45,7 @@ const StyledSubmit = styled.input`
   border: none;
   color: #fff;
   border: 1px solid rgb(177 64 64);
+  border-radius: 0;
 `
 const StyledSearchResults = styled.div`
   max-width: 500;
