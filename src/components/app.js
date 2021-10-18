@@ -154,8 +154,10 @@ export default () => {
     }
     
     <TeamButtons>
-      <StyledButton onClick={clearTeam} type={'border'}>Clear Team</StyledButton> 
-      <AudioButton />
+      <StyledButton onClick={clearTeam} type={'border'}>Clear Team</StyledButton>
+      { 
+        shouldAudioButtonShow()
+      }
     </TeamButtons>
   </App>
   <Attribution />
@@ -177,3 +179,14 @@ const Attribution = () => <MarvelAttribution>
   <a href='http://marvel.com' >Data provided by Marvel. © 2021 MARVEL</a>
 </MarvelAttribution>
 
+const shouldAudioButtonShow = () => {
+  // typeof navigator !== 'undefined' && navigator.userAgent.indexOf("Safari") > -1 ? <StyledButton>Use Chrome for sound</StyledButton> : <AudioButton />
+
+  if(typeof navigator !== 'undefined'){
+    if(navigator.userAgent.indexOf("Chrome") > -1){
+      return <AudioButton />
+    }
+  }
+   return <StyledButton>Use Chrome for sound</StyledButton>
+
+}
