@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import styled from 'styled-components'
 import useRequest from '../hooks/useRequest'
 import StyledButton from './styled/button'
@@ -49,6 +49,13 @@ const StyledSubmit = styled.input`
 const StyledSearchResults = styled.div`
   max-width: 500;
   margin: 0 auto 4em;
+  background: #101010;
+  padding: 1em;
+  box-sizing: border-box;
+  margin-top: -3em;
+  position: absolute;
+  left: 0;
+  right: 0;
 
   & > div {
     max-height: 500px;
@@ -62,6 +69,12 @@ const StyledSearchResults = styled.div`
   & * {
     font-family: 'Rubik', sans-serif;  
   }
+
+  @media (max-width: 600px){
+    & > div {
+      max-height: 50vh;
+    }
+  }
 `
 
 const StyledResultsHero = styled.div`
@@ -69,6 +82,11 @@ const StyledResultsHero = styled.div`
   flex-direction: row;
   padding: 10px;
   border-bottom: 1px solid #3a3a3a;
+  align-items: center;
+
+  @media (max-width: 330px){
+    flex-wrap: wrap;
+  }
 `
 const StyledResultsImg = styled.div`
   width: 50px;
@@ -97,19 +115,35 @@ const SearchDetailsButton = styled.button`
   `background-color: #fff; color: #121212; font-weight: 600;`}
   `
 
-  const ResultsHeroButtons = styled.div`
-    display: flex;
-    flex-direction: row;
-    margin-left: auto;
-    align-items: center;
-  `
+const ResultsHeroButtons = styled.div`
+  display: flex;
+  flex-direction: row;
+  margin-left: auto;
+  align-items: center;
 
+  @media (max-width: 330px){
+    margin-left: 0;
+  }
+`
+const ResultsLabel = styled.p`
+  margin: 0.4em 0;
+  font-size: 0.8em;
+  font-weight: 600;
+`
+
+const StyledName = styled.p`
+  @media (max-width: 330px){
+    width: calc(100% - 60px);
+  }
+`
 
 export const HeroSearch = ({ addHero, inTeam, showModal }) => {
-  const [searchString,setSearchString] = useState('')
+  const [open, setOpen] = useState(false);
+  const [searchString, setSearchString] = useState('')
   const [searchState, searchForHeroes] = useRequest('/heroes/search/')
 
   const handleSubmit = (e) => {
+    setOpen(true);
     searchString && searchString != searchForHeroes(searchString)
     e.preventDefault()
     e.stopPropagation()
@@ -118,6 +152,12 @@ export const HeroSearch = ({ addHero, inTeam, showModal }) => {
   const handleChange = (e) => {
     setSearchString(e.target.value)
   }
+
+  useEffect(() => {
+    const handleClick = (e) => { !e.target.closest('#results') && setOpen(false) }
+    open && document.addEventListener('click', handleClick);
+    return () => { document.removeEventListener('click', handleClick) }
+  })
 
   return <>
     <StyledFormHolder>
@@ -130,7 +170,7 @@ export const HeroSearch = ({ addHero, inTeam, showModal }) => {
     { 
       !searchState ? null :
       searchState === 'loading' ? <Loading>Loading....</Loading> : 
-      <SearchResults searchResults={searchState} addHero={addHero} inTeam={inTeam} showModal={showModal} /> 
+      open && <SearchResults searchResults={searchState} addHero={addHero} inTeam={inTeam} showModal={showModal} /> 
     }
   </>
 }
@@ -138,8 +178,8 @@ export const HeroSearch = ({ addHero, inTeam, showModal }) => {
 const SearchResults = ({ searchResults, addHero, inTeam, showModal}) => {
 
   return !searchResults ? null : 
-  <StyledSearchResults>
-    <p className='results' >Results:</p>
+  <StyledSearchResults id={'results'}>
+    <ResultsLabel>Results:</ResultsLabel>
     <div>{
       searchResults === 'failed' ? <p>There was an error</p> :
       searchResults.length === 0 ? <p>No heroes found</p> : 
@@ -159,7 +199,7 @@ const ResultsHero = ({ heroData, addHero, inTeam, showModal }) => {
       <StyledResultsImg>
         <img src={`${path}.${extension}`} />
       </StyledResultsImg>
-      <p>{name}</p>
+      <StyledName>{name}</StyledName>
       <ResultsHeroButtons>
         <StyledButton type={'no-border'} onClick={ showDetails }>Details</StyledButton>
         {!inTeam(heroData) && <StyledButton type={'border'} onClick={addToTeam}>Add to team</StyledButton>}

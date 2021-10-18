@@ -28,6 +28,10 @@ const StyledModal = styled.div`
     & ul{
       padding-left: 20px;
     }
+
+    @media (max-width: 1020px){
+      width: 96vw;
+    }
 `
 
 const CloseButton = styled.button`
@@ -59,6 +63,13 @@ const StyledHeroDetails = styled.div`
   overflow: auto;
   &::-webkit-scrollbar{
     background-color: #101010;
+    border-radius: 6px;
+  }
+
+  @media (max-width: 1000px){
+    &::-webkit-scrollbar{
+      width: 0;
+    }
   }
 `
 
@@ -81,11 +92,20 @@ const DetailsColumnContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+
+  @media (max-width: 600px){
+    flex-direction: column;
+  }
 `
 
 const DetailsColumn = styled.div`
   max-width: 48%;
   min-width: 48%;
+
+  @media (max-width: 600px){
+   min-width: 100%;
+   max-width: 100%;
+  }
 `
 
 const ListHeader = styled.p`
