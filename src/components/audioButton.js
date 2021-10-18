@@ -1,20 +1,10 @@
-import React, { useRef,useEffect } from "react";
-import styled from "styled-components";
+import React, { useState,useRef,useEffect } from "react";
+import StyledButton from './styled/button'
 
-const StyledAudioButton = styled.button`
-  padding: 10px;
-  border: 1px solid #fff;
-  width: 100%;
-  font-family: 'Rubik', sans-serif;
-  border-radius: 3px;
-  position: absolute;
-  right: 20px;
-  bottom: 20px;
-  max-width: max-content;
-  font-weight: 600;
-`
+
 
 export default () => {
+  const [playing,setPlaying] = useState(null)
   const playingRef = useRef(false)
   const audioRef = useRef(null)
   const streamRef = useRef(null)
@@ -24,9 +14,11 @@ export default () => {
         console.log('changed')
         audioRef.current.play();
         playingRef.current = true;
+        setPlaying(true)
       } else {
         audioRef.current.pause();
         playingRef.current = false;
+        setPlaying(false)
       }
     }
   }
@@ -40,5 +32,8 @@ export default () => {
     }
   })
 
-  return <StyledAudioButton onClick={clickHandler}>Enable Sound</StyledAudioButton>
+  return <StyledButton onClick={clickHandler}>{
+    playing === null ? 'Enable Sound':
+    playing ? 'Pause Song' : 'Resume Song'
+  }</StyledButton>
 }

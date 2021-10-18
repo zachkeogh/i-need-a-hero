@@ -23,7 +23,7 @@ export default (url) => {
       })
       .catch(e => {
         console.log(e)
-        setRequestState(false)
+        setRequestState('failed')
       })
       .finally(() => {
         setParam('')

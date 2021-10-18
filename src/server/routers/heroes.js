@@ -37,8 +37,24 @@ router.get('/search/:for', (req, res, next) => {
   
 })
 
-// router.get('/heroes/single/:id', (req, res, next) => {
+router.get('/single/:id', (req, res, next) => {
+  const heroId = req.params.id;
+  if (heroId == ''){
+    res.status(409)
+    res.send('Empty search parameter')
+  }
 
-// })
+  const requestUrl = `${urlBase}/${heroId}?${generateReqParams()}`
+  
+  axios(requestUrl)
+    .then(response => {
+      res.send(response.data.data.results)
+    })
+    .catch(e => {
+      console.log(e)
+      res.status(500)
+      res.send('There was an error')
+    })
+})
 
 export default router

@@ -1,10 +1,11 @@
 import React, { useState } from "react"
 import styled from 'styled-components'
-import response from '../../heroes-response'
 import Hero from './hero'
 import AudioButton from './audioButton'
-import testSearchResults from '../../sample-search'
-import useRequest from '../hooks/useRequest'
+import { HeroSearch } from './search'
+import useBreakpoint from '../hooks/useBeakpoint'
+import StyledButton from './styled/button'
+import DetailsModal from './detailsModal'
 
 const App = styled.div`
   min-height: 100vh;
@@ -14,6 +15,11 @@ const App = styled.div`
   background-image:  radial-gradient(#a15a5a 0.45px, transparent 0.45px), radial-gradient(#a15a5a 0.45px, #1e1e1e 0.45px);
   background-size: 18px 18px;
   background-position: 0 0,9px 9px;
+
+  .modal-open &{
+    min-width: 100vw;
+  }
+
 `
 
 const Title = styled.h1`
@@ -23,7 +29,11 @@ const Title = styled.h1`
   text-transform: Uppercase;
   line-height: 1.5em;
   padding-top: 2em;
-  margin-bottom: 4em;
+  margin-bottom: 2em;
+
+  @media (max-width: 1150px){
+    padding-top: 1em;
+  }
 `
 
 const BigInnerTitle = styled.span`
@@ -33,176 +43,137 @@ const BigInnerTitle = styled.span`
 
 const StyledTeam = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-around;
   max-width: 96%;
   margin: 0 auto;
 `
 
-const StyledFormHolder = styled.div`
-  margin: 5em auto 3em;
-  max-width: 500px;
-`
-
-const StyledFormPrompt = styled.p`
-  text-align: center;
-  font-family: 'Rubik', sans-serif;
-
-`
-
-const StyledForm = styled.form`
+const TeamRow = styled.div`
+  min-width: 100%;
   display: flex;
-  box-shadow: #000 -6px 6px 0px;
+  justify-content: space-around;
+  margin-bottom: 4em;
 `
 
-const StyledTextInput = styled.input`
+const TeamButtons = styled.div`
+  max-width: 350px;
+  margin: 0 auto;
+  padding-bottom: 3em;
+  display: flex;
+`
+
+const MarvelAttribution = styled.div`
+  background-color: rgb(177, 64, 64);
   width: 100%;
-  padding: 10px;
-  background: #1e1e1e;
-  border: 1px solid #fff;
-  border-right: none;
-  color: #fff;
-  font-family: 'Rubik',sans-serif;
-  font-weight: 300;
-  letter-spacing: 0.2px;
-  &:focus-visible {
-    outline: none;
+  padding: 12px 0;
+  position: sticky;
+
+  & a{
+    font-family: 'Rubik', sans-serif;
+    color: #fff;
+    text-align: center;
+    margin: 0 auto;
+    display: block;
   }
 `
-
-const StyledSubmit = styled.input`
-  font-family: 'Rubik', sans-serif;
-  font-weight: 600;
-  padding: 0 18px;
-  background-color: rgb(177 64 64);
-  border: none;
-  color: #fff;
-  border: 1px solid rgb(177 64 64);
+const ModalOverlay = styled.div`
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  background: #00000070;
 `
 
-const testTeam = response.data.results.filter((c,i) => c.description !== "" && !c.thumbnail.path.includes('image_not_available'))
-
 export default () => {
-  const [team, updateTeam] = useState(testTeam);
+  const [team, updateTeam] = useState([]);
+  const breakpoint = useBreakpoint({ 1400: 5, 1150: 4, 775: 3, 490: 2, 0: 1 });
+  const [modalOpen, setModalOpen] = useState(false);
+
   const removeHero = (heroId) => {
     updateTeam(team.filter(c => c.id != heroId))
   }
+  const addHero = (hero) => {
+    const updatedTeam = team.filter(c => c.name !== 'empty')
+    updatedTeam.push(hero)
+    updateTeam(updatedTeam)
+  }
+  const clearTeam = () => {
+    updateTeam([])
+  }
 
+  const teamWithPadding = (team) => {
+    if(team.length === 0){
+      return Array.from(Array(breakpoint), _ => ({ name: 'empty' }))
+    }
+    const teamArray = Array.from(team)
+    if (team.length % breakpoint == 0){
+      return Array.from(team)
+    } else {
+      teamArray.push({ name: 'empty' })
+      return teamWithPadding(teamArray)
+    }
+  }
 
-  return <App>
+  const groupByBreakpoint = (team) => {
+    return team.reduce((a,c,i) => {
+      if(i % breakpoint == 0){
+        a.push([c])
+      } else {
+        a[a.length - 1].push(c)
+      }
+      return a
+    },[])
+  }
+
+  const showModal= (heroId) => {
+    setModalOpen(heroId)
+    document.getElementsByTagName('body')[0].classList.add('modal-open')
+  }
+
+  const closeModal = () => {
+    setModalOpen(false)
+    document.getElementsByTagName('body')[0].classList.remove('modal-open')
+  }
+
+  const inTeam = (hero) => team.filter(c => c.id === hero.id).length > 0
+
+  return <>
+    {modalOpen && <ModalOverlay />}
+    <App>
     <Title>
       I need a<br />
       <BigInnerTitle>Hero</BigInnerTitle>
     </Title>
-    <Team 
-      team={team}
+    <HeroSearch addHero={addHero} inTeam={inTeam} showModal={showModal} />
+    { !breakpoint ? <p>loading...</p> : <Team 
+      team={groupByBreakpoint(teamWithPadding(team))}
       removeHero={removeHero}
+      cardsPerRow={breakpoint}
+      showModal={showModal}
     />
-    <HeroSearch />
-    <AudioButton />
-  </App>
-}
-
-const Team = ({ team, removeHero }) => {
-  const addEmptyCards = (team) => {
-    if (team.length == 5){
-      return team
-    } else {
-      team.push({ name: 'empty' })
-      return addEmptyCards(team)
     }
-  }
-
-  // console.log('Before Add Empty Cards', team)
-
-  // console.log('After Add Empty Cards', addEmptyCards(team))
-
-  return <StyledTeam>{
-    addEmptyCards(team).map((c,i) => {
-      return c.name !== 'empty' ? <Hero key={c.name} heroData={c} remove={removeHero} /> : <Hero key={i} heroData={c} />
-    }) 
-  }</StyledTeam>
-}
-
-const HeroSearch = () => {
-  // const [searchResults, updateSearchResults] = useState(null);
-  const [searchString,setSearchString] = useState('')
-  const [searchState, searchForHeroes] = useRequest('/heroes/search/')
-
-  const handleSubmit = (e) => {
-    searchString && searchString != searchForHeroes(searchString)
-    e.preventDefault()
-    e.stopPropagation()
-  }
-
-  const handleChange = (e) => {
-    setSearchString(e.target.value)
-  }
-
-  return <>
-    <StyledFormHolder>
-      <StyledFormPrompt>Search for a hero:</StyledFormPrompt>
-      <StyledForm action='#' onSubmit={handleSubmit}>
-        <StyledTextInput type='text' onChange={handleChange} value={searchString} />
-        <StyledSubmit type='submit' />
-      </StyledForm>
-    </StyledFormHolder>
-    { 
-      !searchState ? null :
-      searchState === 'loading' ? <p>loading....</p> : 
-      <SearchResults searchResults={searchState} /> 
-      }
-    <Attribution />
+    
+    <TeamButtons>
+      <StyledButton onClick={clearTeam} type={'border'}>Clear Team</StyledButton> 
+      <AudioButton />
+    </TeamButtons>
+  </App>
+  <Attribution />
+  <DetailsModal open={ modalOpen } closeModal={closeModal}/>
   </>
 }
 
-const Attribution = () => <a href='http://marvel.com' >Data provided by Marvel. © 2021 MARVEL</a>
-
-const filteredSearchResults = testSearchResults.data.results;
-
-const StyledSearchResults = styled.div`
-  max-width: 500;
-  margin: 0 auto;
-  
-  & * {
-    font-family: 'Rubik', sans-serif;  
-  }
-`
-
-const StyledResultsHero = styled.div`
-  display: flex;
-  flex-direction: row;
-  padding: 10px;
-  border-bottom: 1px solid #3a3a3a;
-`
-const StyledResultsImg = styled.div`
-  width: 50px;
-  height: 50px;
-  border-radius: 3px;
-  margin: 0 10px 0 0;
-  overflow: hidden;
-
-  & > img{
-    max-width: 100%;
-  }
-`
-
-const SearchResults = ({ searchResults }) => {
-  return !searchResults ? null : 
-  <StyledSearchResults>
-    <p>results</p>
-    <div>{
-      searchResults.map(c => <ResultsHero key={c.id} heroData={c} />)
-    }</div>
-    </StyledSearchResults>
+const Team = ({ team, removeHero, cardsPerRow, showModal }) => {
+  return <StyledTeam>{
+     team.map((teamRow,rowNumber) => <TeamRow key={`team_row_${rowNumber}`}>{
+      teamRow.map((c,i) => {
+        return c.name !== 'empty' ? <Hero key={c.name} heroData={c} remove={removeHero} widthBasis={cardsPerRow} showModal={showModal} /> : <Hero key={i} heroData={c} widthBasis={cardsPerRow} />
+      })
+     }</TeamRow>)
+  }</StyledTeam>
 }
 
-const ResultsHero = ({ heroData: {name, thumbnail: {path, extension} } }) => {
-  
-  return <StyledResultsHero>
-      <StyledResultsImg>
-        <img src={`${path}.${extension}`} />
-      </StyledResultsImg>
-      <p>{name}</p>
-  </StyledResultsHero>
-}
+const Attribution = () => <MarvelAttribution>
+  <a href='http://marvel.com' >Data provided by Marvel. © 2021 MARVEL</a>
+</MarvelAttribution>
+

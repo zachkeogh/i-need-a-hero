@@ -1,10 +1,12 @@
 import React, { useRef,useState,useEffect } from "react";
 import styled from "styled-components";
+import AddIcon from './styled/icon'
+import StyledButton from './styled/button'
 
 const StyledHero = styled.div`
   border: 1px solid #fff;
-  max-width: 18%;
-  min-width: 18%;
+  ${(props) => `max-width: ${(100 / props.widthBasis) - 2}%;min-width: ${(100 / props.widthBasis) - 2}%;` };
+
   ${(props) => props.type === 'empty' ? 'background-color: #12121240; justify-content: center; align-items: center; display: flex; flex-direction: column; min-height: 400px;' : 
   'background-color: #121212; box-shadow: -6px 6px 0px #b14040;' };
   border-radius: 3px;
@@ -39,26 +41,6 @@ const HeroButtonHolder = styled.div`
   justify-content: space-between;
 `
 
-const StyledHeroButton = styled.button`
-  padding: 10px;
-  border: 1px solid #fff;
-  width: 100%;
-  font-family: 'Rubik', sans-serif;
-  border-radius: 3px;
-  ${(props) => props.type === 'remove' ? `background-color: transparent; color: #fff; margin-right: 5%;` : 
-  `background-color: #fff; color: #121212; font-weight: 600;`}
-`
-const AddIcon = styled.button`
-  border: 1px solid rgb(255, 255, 255);
-  padding: 10px 12px;
-  font-family: Rubik, sans-serif;
-  border-radius: 50%;
-  line-height: 1;
-  background: transparent;
-  color: #fff;
-  font-weight: 900;
-`
-
 const HeroImage = ({thumbnail: {path, extension}}) => {
   const cardRef = useRef(null)
   const [cardWidth, setCardWidth] = useState(false);
@@ -78,32 +60,36 @@ const HeroImage = ({thumbnail: {path, extension}}) => {
 
 const RemoveHeroButton = ({removeFromTeam}) => {
 
-  return <StyledHeroButton type={'remove'} onClick={removeFromTeam} >Remove</StyledHeroButton>
+  return <StyledButton type={'border'} onClick={removeFromTeam} >Remove</StyledButton>
 }
 
-const HeroDetailsButton = () => {
+const HeroDetailsButton = ({ showModal }) => {
 
-  return <StyledHeroButton type={'details'}>Details</StyledHeroButton>
+  return <StyledButton type={'details'} onClick={showModal}>Details</StyledButton>
 }
 
 
-export default ({ heroData: { id, name, description, thumbnail} = {}, remove }) => {
+export default ({ heroData: { id, name, description, thumbnail} = {}, remove, widthBasis, showModal }) => {
   const removeFromTeam = () => {
     remove(id)
   }
 
-  return name != 'empty' ? <StyledHero>
+  const showDetails = () => {
+    showModal(id)
+  }
+
+  return name != 'empty' ? <StyledHero widthBasis={widthBasis}>
     <HeroImage thumbnail={thumbnail} />
     <HeroDetails>
       <HeroName>{name}</HeroName>
       <HeroDescription>{description}</HeroDescription>
       <HeroButtonHolder>
         <RemoveHeroButton removeFromTeam={removeFromTeam} />
-        <HeroDetailsButton />
+        <HeroDetailsButton showModal={showDetails} />
       </HeroButtonHolder>
     </HeroDetails>
   </StyledHero> : 
-  <StyledHero type='empty'>
+  <StyledHero type='empty' widthBasis={widthBasis}>
     <AddIcon>+</AddIcon>
     <HeroDescription>Add a hero</HeroDescription>
   </StyledHero>
