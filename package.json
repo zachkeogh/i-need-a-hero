@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "nodemon babel-node dist/server/server.js",
+    "server-local": "nodemon babel-node dist/server/server.js",
+    "server": "node dist/server/server.js",
     "build-server": "webpack --config config.js",
     "build": "webpack --config config-app.js && webpack --config config.js",
     "build-local" : "webpack --config config-app.js --watch && webpack --config config.js --watch"
