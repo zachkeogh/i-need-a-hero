@@ -1,5 +1,4 @@
 const path = require('path')
-const server = process.env.BUILD_TYPE === 'server'
 
 module.exports = {
   entry : path.resolve(__dirname + '/src/server/server.js'),
